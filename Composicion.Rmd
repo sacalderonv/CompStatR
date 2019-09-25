@@ -1,0 +1,60 @@
+---
+title: "Composicion"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Método de Composición
+
+El método de composición es usado mas frecuentemente en mezclas de distribuciones, es decir
+$$F(x)=\sum_{i=1}^{n}p_{i}F_{i}(x),$$
+donde $\sum_{i}^{n}p_{i}=1.$ Las distribuciones mas utilizadas para $F_{i}(x)$ vienen dadas por una familia, es decir o normales o exponenciales, poisson, etc.
+ El algoritmo de simulación consiste de:
+
+1. Seleccionar el grupo de la  mixtura con probabilidad $p_{i},\ i=1,2,\cdots,n$
+2. Generar una extracción aleatoria de $F_{i}(\cdot)$ con base al grupo seleccionado en (1).
+
+Vamos a simular variables aleatorias de una mixtura con normales para:
+
+* Producir distribuciones bimodales y trimodales.
+* Producir distribuciones sesgadas(Buscar la forma de hacerlo).
+
+```{r mixtura bimodal basado en la normal}
+n=1000
+mixtura=rep(0,n)
+GrupoGen=rep(0,n)
+k=2
+p=c(0.6,0.4)
+grupo=seq(1:k)
+acump=append(0, cumsum(p))
+mu=c(0,10)
+desv=c(0.5,1)
+for(i in 1:n){
+   ####Selección del grupo
+  u=runif(1)
+  condicion=0
+  grupo=1
+  while(condicion==0)
+    if(u<=acump[grupo+1] & u>acump[grupo])
+     {
+       condicion=1 
+     }
+   else
+    {
+    grupo=grupo+1   
+     }
+   mixtura[i]=rnorm(1,mu[grupo],desv[grupo])
+   GrupoGen[i]=grupo
+    }
+
+```
+## Veamos ahora los histogramas y los conteos de los grupos
+```{r histograma}
+hist(mixtura,prob=TRUE)
+lines(lines(density(mixtura)))
+table(GrupoGen)/n
+```
+
